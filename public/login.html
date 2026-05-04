@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLALS | Librarian Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 tracking-tight">PLALS Login</h1>
+            <p class="text-slate-500 mt-1">Librarian Access to Dashboard</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="mb-4">
+                <label for="username" class="block text-xs font-bold text-slate-500 uppercase mb-1">Username</label>
+                <input type="text" id="username" required placeholder="Enter your username"
+                    class="w-full p-3 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            
+            <div class="mb-6">
+                <label for="password" class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password"
+                    class="w-full p-3 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            
+            <button type="submit" id="loginBtn"
+                class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
+                <i class="ph ph-sign-in text-xl"></i> Log In
+            </button>
+
+            <p id="loginMessage" class="text-center mt-4 text-red-500 hidden"></p>
+        </form>
+    </div>
+
+    <script src="js/login.js"></script> 
+</body>
+</html>

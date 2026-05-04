@@ -1,0 +1,52 @@
+/* Button States */
+.method-btn.active {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.method-btn.inactive {
+    background-color: white;
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Table Alignment Fixes --- */
+#kioskTableBody td {
+    vertical-align: middle; /* Vertically center the text/badges */
+    padding: 1rem;          /* Match the p-4 (1rem) of the header */
+}
+
+/* Force 2nd column (Status) to center */
+#kioskTableBody td:nth-child(2) {
+    text-align: center;
+}
+
+/* Force 3rd column (Time) to align right */
+#kioskTableBody td:nth-child(3) {
+    text-align: right;
+}
+#kioskTableBody td:nth-child(3) {
+    text-align: right;
+}
+
+/* Force 4th column (Time Out) to align right */
+#kioskTableBody td:nth-child(4) {
+    text-align: right;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLALS | Visitor Kiosk</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="css/kiosk.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl shadow-blue-200 shadow-md">
+                <i class="ph ph-books"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-800 tracking-tight">LIBRARY ATTENDANCE KIOSK</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Calbayog City Public Library</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full p-6 space-y-6">
+
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            
+            <div class="flex text-center font-bold text-lg border-b border-slate-100 bg-slate-50/50">
+                <button id="tab-mode-checkin" onclick="setGlobalMode('checkin')" 
+                    class="flex-1 py-5 transition-all bg-white text-blue-700 border-b-4 border-blue-600 flex items-center justify-center gap-2 relative">
+                    <i class="ph ph-sign-in text-xl"></i> CHECK IN
+                </button>
+                <button id="tab-mode-checkout" onclick="setGlobalMode('checkout')" 
+                    class="flex-1 py-5 transition-all text-slate-400 hover:text-slate-600 border-b-4 border-transparent flex items-center justify-center gap-2">
+                    CHECK OUT <i class="ph ph-sign-out text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-8">
+                
+                <div class="flex justify-center gap-4 mb-8">
+                    <button onclick="setInputMethod('scan')" id="btn-method-scan" 
+                        class="method-btn active w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                        <i class="ph ph-qr-code text-lg"></i> Scan ID
+                    </button>
+                    <button onclick="setInputMethod('manual')" id="btn-method-manual" 
+                        class="method-btn inactive w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:border-blue-300">
+                        <i class="ph ph-keyboard text-lg"></i> Manual
+                    </button>
+                </div>
+
+                <div class="min-h-[320px] relative">
+                    
+                    <div id="view-scan" class="fade-in flex flex-col items-center justify-center space-y-4">
+                        <div class="text-center space-y-1">
+                            <h2 class="text-lg font-bold text-slate-700">Scan Your Digital ID</h2>
+                            <p class="text-slate-400 text-xs">Position your QR code within the frame.</p>
+                        </div>
+                        
+                        <div class="relative w-64 h-64 bg-black rounded-2xl overflow-hidden shadow-inner border-4 border-slate-100">
+                            <div id="reader" class="w-full h-full object-cover"></div>
+                            <div class="absolute inset-0 border-[30px] border-black/30 z-10 pointer-events-none"></div>
+                        </div>
+
+                        <p id="scan-status" class="text-xs font-bold text-blue-600 animate-pulse bg-blue-50 px-3 py-1 rounded-full">
+                            Camera Active...
+                        </p>
+                    </div>
+
+                    <div id="view-manual" class="hidden fade-in max-w-lg mx-auto">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">First Name</label>
+                                <input type="text" id="firstName" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Last Name</label>
+                                <input type="text" id="lastName" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition text-sm">
+                            </div>
+                        </div>
+
+                        <div id="checkInFields" class="space-y-4 transition-all">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Purpose of Visit</label>
+                                <select id="visitPurpose" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition text-sm text-slate-700">
+                                    <option value="" disabled selected>Select a purpose...</option>
+                                    <option value="Study / Reading">Study / Reading</option>
+                                    <option value="Research">Research / Assignment</option>
+                                    <option value="Borrow / Return Books">Borrow / Return Books</option>
+                                    <option value="Internet Use">Internet / Computer Use</option>
+                                    <option value="Printing / Photocopying">Printing / Photocopying</option>
+                                    <option value="Visitor / Inquiry">Visitor / Inquiry</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Address</label>
+                                    <input type="text" id="address" placeholder="Barangay" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Contact No.</label>
+                                    <input type="text" id="contactNumber" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <button onclick="processKioskAttendance()" id="actionBtn" 
+                                class="w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-blue-200 bg-blue-600 hover:bg-blue-700 transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <i class="ph ph-check-circle text-xl"></i> <span>Check In Now</span>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm">
+                    <i class="ph ph-clock-counter-clockwise text-lg text-blue-500"></i> Recent Activity
+                </h3>
+                <span class="text-[10px] text-slate-400 bg-white px-2 py-1 rounded border border-slate-200">Auto-refreshes every 30s</span>
+            </div>
+            
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-white text-slate-400 text-[10px] uppercase tracking-wider border-b border-slate-100">
+                <tr>
+                <th class="p-4 font-medium">Visitor Name</th>
+                <th class="p-4 font-medium text-center">Status</th>
+                <th class="p-4 font-medium text-right">Time In</th>
+                <th class="p-4 font-medium text-right">Time Out</th> 
+                </tr>
+                </thead>
+                <tbody id="kioskTableBody" class="divide-y divide-slate-50 text-sm text-slate-600">
+                    <tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Loading logs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <footer class="text-center p-6 text-slate-400 text-[10px]">
+        &copy; 2025 Public Library Attendance Log System
+    </footer>
+
+    <script src="js/kiosk.js"></script>
+</body>
+</html>
