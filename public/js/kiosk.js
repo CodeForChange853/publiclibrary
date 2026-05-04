@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // --- STATE MANAGEMENT ---
 let currentMode = 'checkin';
@@ -8,7 +8,7 @@ let html5QrCode = null; // Changed from html5QrcodeScanner
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     loadRecentLogs();
-    setInterval(loadRecentLogs, 30000); 
+    setInterval(loadRecentLogs, 30000);
 
     // Initialize UI
     setGlobalMode('checkin');
@@ -54,9 +54,9 @@ function setInputMethod(method) {
         viewManual.classList.add('hidden');
         btnScan.className = "method-btn active w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2";
         btnManual.className = "method-btn inactive w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:border-blue-300";
-        
+
         // Resume scanning if hidden previously
-        if(html5QrCode && html5QrCode.isScanning) {
+        if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.resume();
         }
     } else {
@@ -64,9 +64,9 @@ function setInputMethod(method) {
         viewManual.classList.remove('hidden');
         btnScan.className = "method-btn inactive w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:border-blue-300";
         btnManual.className = "method-btn active w-40 py-2 rounded-full border-2 text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2";
-        
+
         // Pause scanning to save resources
-        if(html5QrCode && html5QrCode.isScanning) {
+        if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.pause();
         }
     }
@@ -81,9 +81,9 @@ function initScanner() {
     Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
             const cameraId = devices[0].id; // Use the first camera found
-            
+
             html5QrCode.start(
-                cameraId, 
+                cameraId,
                 {
                     fps: 10,
                     qrbox: { width: 250, height: 250 },
@@ -133,9 +133,9 @@ async function processQRLogin(userId) {
         const response = await fetch(`${API_URL}/attendance/scan`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 user_id: userId,
-                mode: currentMode 
+                mode: currentMode
             })
         });
 
@@ -175,13 +175,13 @@ async function processKioskAttendance() {
     const address = document.getElementById('address').value.trim();
     const contact = document.getElementById('contactNumber').value.trim();
     const purpose = document.getElementById('visitPurpose').value;
-    
+
     // Basic Validation
     if (!firstName || !lastName) {
         Swal.fire({ icon: 'warning', text: 'Please enter First and Last Name.' });
         return;
     }
-    
+
     // Logic Split: Check-In vs Check-Out
     if (currentMode === 'checkin') {
         if (!address || !purpose) {
@@ -198,7 +198,7 @@ async function processKioskAttendance() {
             contact_number: contact,
             visit_purpose: purpose
         };
-        
+
         sendKioskRequest(endpoint, payload);
 
     } else {
@@ -209,7 +209,7 @@ async function processKioskAttendance() {
             first_name: firstName,
             last_name: lastName
         };
-        
+
         sendKioskRequest(endpoint, payload);
     }
 }
@@ -252,7 +252,7 @@ function loadRecentLogs() {
             const tableBody = document.getElementById('kioskTableBody');
             if (!tableBody) return;
             tableBody.innerHTML = '';
-            
+
             if (data.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-slate-400 italic">No recent activity today.</td></tr>';
                 return;
@@ -261,9 +261,9 @@ function loadRecentLogs() {
             data.slice(0, 6).forEach(log => {
                 const row = document.createElement('tr');
                 const timeStr = new Date(log.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
+
                 const isCheckedIn = log.status === 'Checked In' || log.status === 'Active';
-                const statusHtml = isCheckedIn 
+                const statusHtml = isCheckedIn
                     ? '<span class="text-green-600 font-bold text-[10px] bg-green-50 px-2 py-1 rounded-full border border-green-200 uppercase tracking-wide">IN</span>'
                     : '<span class="text-slate-500 font-bold text-[10px] bg-slate-100 px-2 py-1 rounded-full border border-slate-200 uppercase tracking-wide">OUT</span>';
 
@@ -279,14 +279,14 @@ function loadRecentLogs() {
             });
         })
         .catch(err => console.error(err));
-}function loadRecentLogs() {
+} function loadRecentLogs() {
     fetch(`${API_URL}/attendance/history`)
         .then(res => res.json())
         .then(data => {
             const tableBody = document.getElementById('kioskTableBody');
             if (!tableBody) return;
             tableBody.innerHTML = '';
-            
+
             if (data.length === 0) {
                 // Note: colspan increased to 4
                 tableBody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No recent activity today.</td></tr>';
@@ -296,23 +296,23 @@ function loadRecentLogs() {
             // Show top 6 entries
             data.slice(0, 6).forEach(log => {
                 const row = document.createElement('tr');
-                
+
                 // Format Times
                 const timeInStr = new Date(log.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const timeOutStr = log.check_out_time 
-                    ? new Date(log.check_out_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                const timeOutStr = log.check_out_time
+                    ? new Date(log.check_out_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : '-';
 
                 // Status Badge Logic
                 const isCheckedIn = log.status === 'Checked In' || log.status === 'Active';
-                const statusHtml = isCheckedIn 
+                const statusHtml = isCheckedIn
                     ? '<span class="text-green-600 font-bold text-[10px] bg-green-50 px-2 py-1 rounded-full border border-green-200 uppercase tracking-wide">IN</span>'
                     : '<span class="text-slate-400 font-bold text-[10px] bg-slate-100 px-2 py-1 rounded-full border border-slate-200 uppercase tracking-wide">OUT</span>';
 
                 // Privacy Name (e.g., "Juan Dela Cruz" -> "Juan D. Cruz")
                 const nameParts = log.full_name.split(' ');
                 // Simple privacy filter: First name + Last Initial if long name
-                const displayName = log.full_name; 
+                const displayName = log.full_name;
 
                 // Add CSS classes for the new 4th column
                 row.innerHTML = `

@@ -15,18 +15,24 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public')); // <--- IMPORTANT: Serves your HTML file
 
 // API Routes
-app.use('/api/users', require('./routes/userRoutes')); 
+app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/books', bookRoutes);
 app.use('/api/circulation', loanRoutes);
 
 // Start Server
-app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  try {
-    const [rows] = await db.execute('SELECT 1');
-    console.log('Database connection successful: Linked to PLALS DB');
-  } catch (error) {
-    console.error('Database connection failed:', error.message);
-  }
-});
+// Start Server (Only listen locally)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    try {
+      const [rows] = await db.execute('SELECT 1');
+      console.log('Database connection successful: Linked to PLALS DB');
+    } catch (error) {
+      console.error('Database connection failed:', error.message);
+    }
+  });
+}
+
+// EXPORT THE APP FOR VERCEL
+module.exports = app;

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 async function handleLogin(event) {
     event.preventDefault();
@@ -7,7 +7,7 @@ async function handleLogin(event) {
     const password = document.getElementById('password').value;
     const loginBtn = document.getElementById('loginBtn');
     const messageEl = document.getElementById('loginMessage');
-    
+
     loginBtn.disabled = true;
     messageEl.classList.add('hidden');
     messageEl.innerText = '';
@@ -25,10 +25,10 @@ async function handleLogin(event) {
             // SUCCESS: Save the token and redirect to the dashboard
             localStorage.setItem('authToken', result.token);
             // Optional: Save user name for dashboard greeting
-            localStorage.setItem('userName', result.user.name); 
+            localStorage.setItem('userName', result.user.name);
 
             // Redirect to the secured dashboard
-            window.location.href = 'index.html'; 
+            window.location.href = 'index.html';
 
         } else {
             // FAILURE

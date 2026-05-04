@@ -1,6 +1,6 @@
 // public/script.js
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // --- GLOBAL UTILITY FUNCTIONS ---
 
@@ -23,7 +23,7 @@ function checkAuthentication() {
 // 2. Utility to handle authenticated fetching (REQUIRED FOR FR1)
 async function authenticatedFetch(url, options = {}) {
     const token = localStorage.getItem('authToken');
-    
+
     // Ensure Content-Type is set for POST/PUT requests
     options.headers = {
         ...options.headers,
@@ -39,7 +39,7 @@ async function authenticatedFetch(url, options = {}) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
         window.location.href = 'login.html';
-        return; 
+        return;
     }
 
     return response;
@@ -57,8 +57,8 @@ function handleLogout() {
 // 1. Fetch History on Load
 document.addEventListener('DOMContentLoaded', () => {
     // Check auth status immediately
-    if (!checkAuthentication()) return; 
-    
+    if (!checkAuthentication()) return;
+
     // Continue with data loading only if authenticated
     loadHistory();
     loadHotLists();
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const newUserForm = document.getElementById('newUserForm');
     if (newUserForm) {
-    newUserForm.addEventListener('submit', handleAddUser);
+        newUserForm.addEventListener('submit', handleAddUser);
 
     }
 
@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 2. Function to Load Attendance History (UPDATED to use authenticatedFetch)
 // --- GLOBAL VARIABLES FOR PAGINATION & FILTERING ---
-let allAttendanceData = []; 
-let filteredData = [];      
+let allAttendanceData = [];
+let filteredData = [];
 let currentPage = 1;
-const itemsPerPage = 5;     
+const itemsPerPage = 5;
 let allBooksData = [];
 
 async function loadHistory() {
@@ -87,16 +87,16 @@ async function loadHistory() {
         const response = await authenticatedFetch(`${API_URL}/attendance/history`);
 
         if (!response || !response.ok) {
-             throw new Error("Failed to load history.");
+            throw new Error("Failed to load history.");
         }
-        
+
         const data = await response.json();
-        
+
         // Save data to global variable
-        allAttendanceData = data; 
-        
+        allAttendanceData = data;
+
         updateDashboardMetrics(data);
-        applyFilters(); 
+        applyFilters();
 
     } catch (error) {
         console.error('Error loading history:', error);
@@ -113,18 +113,18 @@ function updateDashboardMetrics(data) {
 
     if (data) {
         const activeUsers = data.filter(log => log.status === 'Checked In');
-        if(activeCountEl) activeCountEl.innerText = activeUsers.length;
+        if (activeCountEl) activeCountEl.innerText = activeUsers.length;
 
-        if(capacityBar) {
+        if (capacityBar) {
             const utilization = Math.min((activeUsers.length / LIBRARY_CAPACITY) * 100, 100);
             capacityBar.style.width = `${utilization}%`;
-            if(capacityText) capacityText.innerText = `${activeUsers.length}/${LIBRARY_CAPACITY} Seats`;
+            if (capacityText) capacityText.innerText = `${activeUsers.length}/${LIBRARY_CAPACITY} Seats`;
         }
 
         const todayString = new Date().toDateString();
         const todaysLogs = data.filter(log => new Date(log.check_in_time).toDateString() === todayString);
-        if(totalTodayEl) totalTodayEl.innerText = todaysLogs.length;
-        
+        if (totalTodayEl) totalTodayEl.innerText = todaysLogs.length;
+
         // --- PEAK HOUR LOGIC ---
         let hourlyCounts = {};
         todaysLogs.forEach(log => {
@@ -141,7 +141,7 @@ function updateDashboardMetrics(data) {
                 peakHour = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
             }
         }
-        
+
         const peakHourDisplay = document.getElementById('peakHourDisplay');
         if (peakHourDisplay) peakHourDisplay.innerText = peakHour;
     }
@@ -201,7 +201,7 @@ async function loadHotLists() {
 function renderTrending(books) {
     const container = document.getElementById('trending-container');
     if (!container) return;
-    
+
     if (!books || books.length === 0) {
         container.innerHTML = '<p class="text-sm text-slate-400 italic text-center py-6">Not enough data to show trends.</p>';
         return;
@@ -221,14 +221,14 @@ function renderTrending(books) {
             </span>
         </div>
     `).join('');
-    
+
     container.innerHTML = `<div class="flex flex-col">${html}</div>`;
 }
 
 function renderOverdue(loans) {
     const container = document.getElementById('overdue-container');
     if (!container) return;
-    
+
     if (!loans || loans.length === 0) {
         container.innerHTML = `
             <div class="flex flex-col items-center justify-center py-6 text-green-600 bg-green-50/50 rounded-lg border border-green-100">
@@ -255,7 +255,7 @@ function renderOverdue(loans) {
             </p>
         </div>
     `}).join('');
-    
+
     container.innerHTML = `<div class="flex flex-col">${html}</div>`;
 }
 
@@ -268,14 +268,14 @@ function applyFilters() {
 
     filteredData = allAttendanceData.filter(log => {
         const matchesName = log.full_name.toLowerCase().includes(searchQuery);
-        
+
         let matchesStatus = true;
         if (statusFilter === 'active') matchesStatus = log.status === 'Checked In';
         if (statusFilter === 'completed') matchesStatus = log.status !== 'Checked In';
 
         let matchesDate = true;
         if (dateFilter) {
-            const logDate = new Date(log.check_in_time).toLocaleDateString('en-CA'); 
+            const logDate = new Date(log.check_in_time).toLocaleDateString('en-CA');
             matchesDate = logDate === dateFilter;
         }
 
@@ -304,28 +304,28 @@ function renderTable() {
 
     pageData.forEach(log => {
         const row = document.createElement('tr');
-        
+
         const checkInTime = new Date(log.check_in_time);
         const now = new Date();
-        const diffInHours = (now - checkInTime) / (1000 * 60 * 60); 
-        
+        const diffInHours = (now - checkInTime) / (1000 * 60 * 60);
+
         let rowClass = "hover:bg-slate-50 transition border-b border-slate-50";
         let timeClass = "text-slate-500";
-        
+
         if (log.status === 'Checked In') {
             if (diffInHours > 8) {
                 rowClass = "bg-red-50 hover:bg-red-100 transition border-b border-red-100";
-                timeClass = "text-red-600 font-bold"; 
+                timeClass = "text-red-600 font-bold";
             } else if (diffInHours > 5) {
                 rowClass = "bg-orange-50 hover:bg-orange-100 transition border-b border-orange-100";
             }
         }
 
         row.className = rowClass;
-        
+
         const timeIn = new Date(log.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
-        const statusBadge = log.status === 'Checked In' 
+
+        const statusBadge = log.status === 'Checked In'
             ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">Active</span>'
             : '<span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-full text-xs font-bold">Completed</span>';
 
@@ -361,7 +361,7 @@ function renderTable() {
     });
 
     const totalItems = filteredData.length;
-    if(pageInfo) pageInfo.innerText = `${start + 1}-${Math.min(end, totalItems)} of ${totalItems}`;
+    if (pageInfo) pageInfo.innerText = `${start + 1}-${Math.min(end, totalItems)} of ${totalItems}`;
 }
 
 // 5. Change Page Function
@@ -387,18 +387,18 @@ async function handleCheckOut(id, type) {
                 type: 'walk-in',
                 id: id
             };
-        } 
+        }
         // If it's a registered user, we treat the ID as the LOG ID (which we aliased as session_id in the SQL)
         else {
-           
+
             payload = { type: 'walk-in', id: id };
         }
-    
-        
+
+
         // Actually, the cleanest fix is to send:
         if (type === 'registered') {
-        
-             payload = { log_id: id }; 
+
+            payload = { log_id: id };
         }
 
         // Send the checkout request
@@ -449,37 +449,37 @@ function showSection(sectionName) {
         activeBtn.classList.add('bg-blue-50', 'text-blue-600');
     }
 
-    if (sectionName === 'dashboard') loadHistory(); loadHotLists(); 
+    if (sectionName === 'dashboard') loadHistory(); loadHotLists();
     if (sectionName === 'users') loadUsers();
-    if (sectionName === 'circulation') loadLoans(); 
-    if (sectionName === 'books') loadBooks();       
+    if (sectionName === 'circulation') loadLoans();
+    if (sectionName === 'books') loadBooks();
 }
 
 // 8. Load Users (UPDATED to use authenticatedFetch)
-let allUsersData = []; 
+let allUsersData = [];
 async function loadUsers(searchQuery = '') {
     try {
         const url = searchQuery ? `${API_URL}/users?search=${searchQuery}` : `${API_URL}/users`;
         // Change: Use authenticatedFetch
         const response = await authenticatedFetch(url);
-        
+
         if (!response || !response.ok) {
-             throw new Error("Failed to load users.");
+            throw new Error("Failed to load users.");
         }
-        
+
         const users = await response.json();
-        
-        allUsersData = users; 
+
+        allUsersData = users;
         const tableBody = document.getElementById('usersTableBody');
         tableBody.innerHTML = '';
 
         users.forEach(user => {
             const row = document.createElement('tr');
             row.className = "hover:bg-slate-50 transition border-b border-slate-100";
-            
+
             const displayId = user.student_id || user.id;
 
-row.innerHTML = `
+            row.innerHTML = `
     <td class="p-4 text-slate-400 font-mono text-xs">#${displayId}</td>
     <td class="p-4 font-bold text-slate-700 flex items-center gap-3">
         <img src="${user.profile_picture || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full object-cover border border-slate-200">
@@ -503,7 +503,7 @@ row.innerHTML = `
 // New Helper to find user and print (NO CHANGE)
 function prepareIDPrint(dbId) {
     const user = allUsersData.find(u => u.id === dbId);
-    if(user) {
+    if (user) {
         generateIDCard(user.student_id || user.id, user.full_name, user.user_type, user.profile_picture);
     }
 }
@@ -529,13 +529,13 @@ async function handleAddUser(event) {
     const contact = contactInput.value;
     //const address = addressInput ? addressInput.value : ''; //uncomment after implementing address field
 
-    
+
     // 2. Handle Photo/Base64 logic
     const photoRadio = document.querySelector('input[name="idType"]:checked');
     const isPhotoFormat = photoRadio ? photoRadio.value === 'photo' : false;
     const fileInput = document.getElementById('newUserPhoto');
     let base64Image = null;
-    
+
     if (isPhotoFormat && fileInput && fileInput.files.length > 0) {
         try {
             base64Image = await toBase64(fileInput.files[0]);
@@ -548,28 +548,28 @@ async function handleAddUser(event) {
         // 3. Send payload to Backend
         const response = await authenticatedFetch(`${API_URL}/users/add`, {
             method: 'POST',
-            body: JSON.stringify({ 
-                full_name: name, 
-                user_type: type, 
+            body: JSON.stringify({
+                full_name: name,
+                user_type: type,
                 contact_number: contact,
                 address: null, //change null to "address" after implementing address field
-                email: null, 
-                age: null, 
-                profile_picture: base64Image 
+                email: null,
+                age: null,
+                profile_picture: base64Image
             })
         });
-        
+
         if (response && response.ok) {
             showSuccess(`User Registered Successfully!`);
-            toggleModal('addUserModal'); 
-            
+            toggleModal('addUserModal');
+
             // Clear inputs
             nameInput.value = '';
             contactInput.value = '';
             //if (addressInput) addressInput.value = ''; //uncomment after implementing address field
 
             if (fileInput) fileInput.value = '';
-            
+
             loadUsers(); // Refresh the table
         } else {
             const data = await response.json();
@@ -599,10 +599,10 @@ async function deleteUser(id) {
     try {
         // Change: Use authenticatedFetch
         const response = await authenticatedFetch(`${API_URL}/users/${id}`, { method: 'DELETE' });
-        
+
         if (!response) return;
 
-        if (response.ok) loadUsers(); 
+        if (response.ok) loadUsers();
         else alert('Could not delete user');
     } catch (error) {
         console.error('Delete error:', error);
@@ -612,7 +612,7 @@ async function deleteUser(id) {
 // UI Utilities (NO CHANGE)
 function toggleModal(modalId) {
     const modal = document.getElementById(modalId);
-    if(modal) modal.classList.toggle('hidden');
+    if (modal) modal.classList.toggle('hidden');
 }
 
 // 11. Export to CSV Function (NO CHANGE - Does not hit API)
@@ -627,8 +627,8 @@ function exportToCSV() {
     const rows = filteredData.map(log => {
         const timeIn = new Date(log.check_in_time).toLocaleString();
         const timeOut = log.check_out_time ? new Date(log.check_out_time).toLocaleString() : '-';
-        
-        const cleanName = `"${log.full_name}"`; 
+
+        const cleanName = `"${log.full_name}"`;
         const cleanPurpose = `"${log.visit_purpose || 'General'}"`;
 
         return [cleanName, cleanPurpose, log.status, timeIn, timeOut].join(",");
@@ -638,20 +638,20 @@ function exportToCSV() {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    
-    const today = new Date().toLocaleDateString('en-CA'); 
+
+    const today = new Date().toLocaleDateString('en-CA');
     link.setAttribute("href", url);
     link.setAttribute("download", `library_report_${today}.csv`);
-    
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}   
+}
 
 // 12. Handle Check Out All (UPDATED to use authenticatedFetch)
 async function handleCheckOutAll() {
     const activeUsers = allAttendanceData.filter(log => log.status === 'Checked In');
-    
+
     if (activeUsers.length === 0) {
         alert("No active visitors to check out.");
         return;
@@ -660,13 +660,13 @@ async function handleCheckOutAll() {
     if (!confirm(`Are you sure you want to force check-out ${activeUsers.length} visitors?`)) return;
 
     let successCount = 0;
-    
+
     for (const user of activeUsers) {
         try {
             // Change: Use authenticatedFetch
             await authenticatedFetch(`${API_URL}/attendance/checkout`, {
                 method: 'POST',
-                body: JSON.stringify({ user_id: user.user_id }) 
+                body: JSON.stringify({ user_id: user.user_id })
             });
             successCount++;
         } catch (err) {
@@ -675,7 +675,7 @@ async function handleCheckOutAll() {
     }
 
     alert(`Successfully checked out ${successCount} visitors.`);
-    loadHistory(); 
+    loadHistory();
 }
 
 // 13. Edit Visit Details (NO CHANGE - Assumes backend is secured)
@@ -701,7 +701,7 @@ async function saveEdit() {
 
         if (response.ok) {
             document.getElementById('editModal').classList.add('hidden');
-            loadHistory(); 
+            loadHistory();
         } else {
             alert('Failed to update purpose');
         }
@@ -717,14 +717,14 @@ async function loadBooks() {
     try {
         // Change: Use authenticatedFetch
         const response = await authenticatedFetch(`${API_URL}/books`);
-        
+
         if (!response || !response.ok) {
-             throw new Error("Failed to load books.");
+            throw new Error("Failed to load books.");
         }
-        
+
         const data = await response.json();
-        
-        allBooksData = data; 
+
+        allBooksData = data;
         renderBookTable(data);
     } catch (error) {
         console.error('Error loading books:', error);
@@ -735,13 +735,13 @@ async function loadBooks() {
 function renderBookTable(books) {
     const tableBody = document.getElementById('booksTableBody');
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = '';
 
     books.forEach(book => {
         const row = document.createElement('tr');
         row.className = "hover:bg-slate-50 transition border-b border-slate-100";
-        
+
         let statusBadge = '<span class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold">Unknown</span>';
         if (book.status === 'Available') statusBadge = '<span class="bg-green-50 text-green-600 px-2 py-1 rounded text-xs font-bold border border-green-100">Available</span>';
         if (book.status === 'Borrowed') statusBadge = '<span class="bg-orange-50 text-orange-600 px-2 py-1 rounded text-xs font-bold border border-orange-100">Borrowed</span>';
@@ -765,8 +765,8 @@ function renderBookTable(books) {
 // 17. Filter Books (Search Bar) (NO CHANGE)
 function filterBooks(query) {
     const lowerQuery = query.toLowerCase();
-    const filtered = allBooksData.filter(book => 
-        book.title.toLowerCase().includes(lowerQuery) || 
+    const filtered = allBooksData.filter(book =>
+        book.title.toLowerCase().includes(lowerQuery) ||
         book.author.toLowerCase().includes(lowerQuery) ||
         book.isbn.includes(query)
     );
@@ -776,7 +776,7 @@ function filterBooks(query) {
 // 18. Add New Book (UPDATED to use authenticatedFetch)
 async function handleAddBook(event) {
     event.preventDefault();
-    
+
     const isbn = document.getElementById('newBookIsbn').value;
     const title = document.getElementById('newBookTitle').value;
     const author = document.getElementById('newBookAuthor').value;
@@ -790,16 +790,16 @@ async function handleAddBook(event) {
         });
 
         if (!response) return;
-        
+
         if (response.ok) {
-            toggleModal('addBookModal'); 
-            
+            toggleModal('addBookModal');
+
             document.getElementById('newBookTitle').value = '';
             document.getElementById('newBookAuthor').value = '';
             document.getElementById('newBookIsbn').value = '';
-            
-            showSuccess('Book Added Successfully!'); 
-            
+
+            showSuccess('Book Added Successfully!');
+
             loadBooks();
         } else {
             const data = await response.json();
@@ -817,13 +817,13 @@ async function loadLoans() {
     try {
         // Change: Use authenticatedFetch
         const response = await authenticatedFetch(`${API_URL}/circulation/active`);
-        
+
         if (!response || !response.ok) {
-             throw new Error("Failed to load loans.");
+            throw new Error("Failed to load loans.");
         }
-        
+
         const loans = await response.json();
-        
+
         const tableBody = document.getElementById('loansTableBody');
         if (!tableBody) return;
 
@@ -878,8 +878,8 @@ async function handleIssueBook(event) {
         const result = await response.json();
 
         if (response.ok) {
-            showSuccess('Book Issued Successfully!'); 
-            
+            showSuccess('Book Issued Successfully!');
+
             document.getElementById('issueUserId').value = '';
             document.getElementById('issueIsbn').value = '';
             loadLoans();
@@ -905,7 +905,7 @@ function handleReturnBook(loanId) {
 
             if (response.ok) {
                 showSuccess('Book Returned Successfully');
-                loadLoans(); 
+                loadLoans();
             } else {
                 alert('Error returning book');
             }
@@ -921,25 +921,25 @@ function handleReturnBook(loanId) {
 function showSuccess(message) {
     const modal = document.getElementById('successModal');
     const msg = document.getElementById('successMessageText');
-    if(modal && msg) {
+    if (modal && msg) {
         msg.innerText = message;
         modal.classList.remove('hidden');
     }
 }
 
 // 2. Confirmation Modal Helper
-let pendingConfirmAction = null; 
+let pendingConfirmAction = null;
 
 function showConfirm(message, callback) {
     const modal = document.getElementById('confirmModal');
     const msg = document.getElementById('confirmMessageText');
     const yesBtn = document.getElementById('confirmYesBtn');
 
-    if(modal && msg && yesBtn) {
+    if (modal && msg && yesBtn) {
         msg.innerText = message;
-        pendingConfirmAction = callback; 
-        
-        yesBtn.onclick = function() {
+        pendingConfirmAction = callback;
+
+        yesBtn.onclick = function () {
             if (pendingConfirmAction) pendingConfirmAction();
             closeConfirm();
         };
@@ -950,7 +950,7 @@ function showConfirm(message, callback) {
 
 function closeConfirm() {
     const modal = document.getElementById('confirmModal');
-    if(modal) modal.classList.add('hidden');
+    if (modal) modal.classList.add('hidden');
 }
 
 // --- ID CARD GENERATION (UPDATED FOR DYNAMIC LAYOUT & LARGER QR) ---
@@ -961,7 +961,7 @@ function getIdCardHTML(id, name, type, qrImage, userImage) {
     // LAYOUT LOGIC:
     // If Photo: Image takes left side, Text middle, QR right.
     // If No Photo: Text takes left large area, QR takes right large area.
-    
+
     let contentHtml = '';
 
     if (hasPhoto) {
@@ -1070,15 +1070,15 @@ function getIdCardHTML(id, name, type, qrImage, userImage) {
 
 function generateIDCard(id, name, type, userImage) {
     const qrContainer = document.createElement('div');
-    
+
     // Increased Resolution for sharper print
     new QRCode(qrContainer, {
-        text: id.toString(),  
+        text: id.toString(),
         width: 300,  // Increased from 150 to 300 for high quality
         height: 300,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
     });
 
     setTimeout(() => {
@@ -1096,7 +1096,7 @@ function generateIDCard(id, name, type, userImage) {
 function togglePhotoField(show) {
     const field = document.getElementById('photoUploadField');
     const input = document.getElementById('newUserPhoto');
-    
+
     if (show) {
         field.style.display = 'block';
         field.style.opacity = '1';
@@ -1117,7 +1117,7 @@ function showSection(sectionName) {
         const el = document.getElementById(sec + 'Section');
         if (el) el.classList.add('hidden');
     });
-    
+
     buttons.forEach(btn => {
         const el = document.getElementById(btn);
         if (el) {
@@ -1173,11 +1173,11 @@ function renderWalkinTable(data) {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
 
-        const timeIn = new Date(row.check_in_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        const statusBadge = row.status === 'Checked In' 
+        const timeIn = new Date(row.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const statusBadge = row.status === 'Checked In'
             ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">Active</span>'
             : '<span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-full text-xs font-bold">Left</span>';
-            
+
         // Action Button: Only show "Check Out" if they are currently Checked In
         const actionBtn = row.status === 'Checked In'
             ? `<button onclick="handleWalkinCheckOut(${row.id})" class="text-red-600 hover:bg-red-50 border border-red-200 px-3 py-1 rounded-lg text-xs font-bold transition">Check Out</button>`
@@ -1225,8 +1225,8 @@ async function handleWalkinCheckOut(id) {
 // 5. NEW FUNCTION: Search Filter for Walk-ins
 function filterWalkIns(query) {
     const lower = query.toLowerCase();
-    const filtered = allWalkIns.filter(w => 
-        w.first_name.toLowerCase().includes(lower) || 
+    const filtered = allWalkIns.filter(w =>
+        w.first_name.toLowerCase().includes(lower) ||
         w.last_name.toLowerCase().includes(lower)
     );
     renderWalkinTable(filtered);
