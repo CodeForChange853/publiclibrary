@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const db = require('./config/db');
 const bookRoutes = require('./routes/bookRoutes');
@@ -12,8 +13,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static('public')); // <--- IMPORTANT: Serves your HTML file
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // API Routes
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/attendance', require('./routes/attendanceRoutes'));
