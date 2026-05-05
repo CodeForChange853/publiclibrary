@@ -32,7 +32,8 @@ async function handleLogin(event) {
 
         } else {
             // FAILURE
-            messageEl.innerText = result.message || 'Login failed. Check username and password.';
+            const errorMsg = result.details ? `${result.message} - ${result.details}` : result.message;
+            messageEl.innerText = errorMsg || 'Login failed. Check username and password.';
             messageEl.classList.remove('hidden');
         }
 

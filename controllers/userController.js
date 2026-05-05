@@ -29,7 +29,14 @@ exports.login = async (req, res) => {
 
         res.status(200).json({ message: 'Login successful', token, user: { id: librarian.id, name: librarian.full_name } });
     } catch (error) {
-        res.status(500).json({ message: 'Server Error during authentication' });
+        // 1. Force Vercel to print the exact error to the logs
+        console.error("🔥 LOGIN CRASH REPORT:", error);
+
+        // 2. Send the exact error message directly to the website browser
+        res.status(500).json({
+            message: 'Server Error during authentication',
+            details: error.message
+        });
     }
 };
 
@@ -38,14 +45,14 @@ exports.login = async (req, res) => {
 exports.registerUser = async (req, res) => {
     try {
         // 1. Destructure with default values of null
-        const { 
-            full_name, 
-            user_type, 
-            contact_number, 
+        const {
+            full_name,
+            user_type,
+            contact_number,
             email = null, // Defaults to null if missing from frontend
             age = null,   // Defaults to null if missing from frontend
-            address = null, 
-            profile_picture = null 
+            address = null,
+            profile_picture = null
         } = req.body;
 
         const year = new Date().getFullYear();
@@ -56,13 +63,13 @@ exports.registerUser = async (req, res) => {
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
         await db.execute(sql, [
-            full_name, 
-            user_type, 
-            contact_number, 
-            email, 
-            age, 
-            address, 
-            profile_picture, 
+            full_name,
+            user_type,
+            contact_number,
+            email,
+            age,
+            address,
+            profile_picture,
             libraryId
         ]);
 
