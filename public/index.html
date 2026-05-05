@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,520 +12,586 @@
         // Check for token on page load
         if (!localStorage.getItem('authToken')) {
             // If no token exists, redirect to login page immediately
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     </script>
 </head>
+
 <body class="bg-slate-100 text-slate-800 font-sans">
 
     <div class="flex h-screen">
-        
+
         <aside class="w-64 bg-white shadow-xl flex flex-col z-10">
             <div class="p-6 border-b border-slate-100">
                 <h1 class="text-2xl font-bold text-blue-600 tracking-tighter">PLALS</h1>
                 <p class="text-xs text-slate-400">Public Library System</p>
             </div>
-                <nav class="flex-1 p-4 space-y-2">
-                    <button id="dashboardBtn" onclick="showSection('dashboard')" class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition">
-                        <i class="ph ph-squares-four text-lg"></i> Dashboard & Reports
-                    </button>
-                    
-                    <button id="circulationBtn" onclick="showSection('circulation')" class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
-                        <i class="ph ph-arrows-left-right text-lg"></i> Circulation
-                    </button>
+            <nav class="flex-1 p-4 space-y-2">
+                <button id="dashboardBtn" onclick="showSection('dashboard')"
+                    class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition">
+                    <i class="ph ph-squares-four text-lg"></i> Dashboard & Reports
+                </button>
 
-                    <button id="booksBtn" onclick="showSection('books')" class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
-                        <i class="ph ph-books text-lg"></i> Book Inventory
-                    </button>
+                <button id="circulationBtn" onclick="showSection('circulation')"
+                    class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                    <i class="ph ph-arrows-left-right text-lg"></i> Circulation
+                </button>
 
-                    <button id="usersBtn" onclick="showSection('users')" class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
-                        <i class="ph ph-users text-lg"></i> User Management
-                    </button>
+                <button id="booksBtn" onclick="showSection('books')"
+                    class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                    <i class="ph ph-books text-lg"></i> Book Inventory
+                </button>
 
-                    <button id="walkinBtn" onclick="showSection('walkin')" class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
-                        <i class="ph ph-footprints text-lg"></i> Walk-in Visitors
-                    </button>
-                </nav>
+                <button id="usersBtn" onclick="showSection('users')"
+                    class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                    <i class="ph ph-users text-lg"></i> User Management
+                </button>
+
+                <button id="walkinBtn" onclick="showSection('walkin')"
+                    class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                    <i class="ph ph-footprints text-lg"></i> Walk-in Visitors
+                </button>
+            </nav>
             <div class="p-4 border-t border-slate-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">A</div>
-                <div>
-                    <p class="text-sm font-bold">Librarian</p>
-                    <p class="text-xs text-slate-400">System Admin</p>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        A</div>
+                    <div>
+                        <p class="text-sm font-bold">Librarian</p>
+                        <p class="text-xs text-slate-400">System Admin</p>
+                    </div>
                 </div>
+
+                <button onclick="handleLogout()"
+                    class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                    title="Log Out">
+                    <i class="ph-fill ph-sign-out text-xl"></i>
+                </button>
             </div>
-            
-            <button onclick="handleLogout()" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors" title="Log Out">
-                <i class="ph-fill ph-sign-out text-xl"></i>
-            </button>
-        </div>
         </aside>
 
         <main class="flex-1 overflow-y-auto p-8">
-            
-    <div id="dashboardSection">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold">Overview</h2>
-                <p class="text-slate-500">Welcome back, here's what's happening today.</p>
-            </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition" onclick="toggleModal('checkInModal')">
-                + Quick Check-In
-            </button>
-        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-start mb-4">
+            <div id="dashboardSection">
+                <header class="flex justify-between items-center mb-8">
                     <div>
-                        <p class="text-slate-400 text-sm font-medium mb-1">Active Visitors</p>
-                        <h3 class="text-3xl font-bold text-slate-800" id="activeCount">0</h3>
+                        <h2 class="text-2xl font-bold">Overview</h2>
+                        <p class="text-slate-500">Welcome back, here's what's happening today.</p>
                     </div>
-                    <div class="p-2 bg-green-100 text-green-600 rounded-lg">
-                        <i class="ph ph-user-focus text-xl"></i>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs text-slate-400 mb-1">
-                        <span>Space Utilization</span>
-                        <span id="capacityText">0/50 Seats</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div id="capacityBar" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-slate-400 text-sm font-medium mb-1">Total Today</p>
-                        <h3 class="text-3xl font-bold text-slate-800" id="totalTodayCount">0</h3>
-                        <p class="text-xs text-slate-400 mt-1">Check-ins since opening</p>
-                    </div>
-                    <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                        <i class="ph ph-users-three text-xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-slate-400 text-sm font-medium mb-1">Busiest Hour</p>
-                        <h3 class="text-3xl font-bold text-slate-800" id="peakHourDisplay">-</h3>
-                        <p class="text-xs text-slate-400 mt-1">Based on today's traffic</p>
-                    </div>
-                    <div class="p-2 bg-orange-100 text-orange-600 rounded-lg">
-                        <i class="ph ph-trend-up text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-2">
-    
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-gray-800 font-semibold text-base flex items-center gap-2">
-                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg>
-                Trending Titles
-            </h3>
-            <span class="text-xs text-gray-400 font-medium">This Month</span>
-        </div>
-        <div id="trending-container" class="flex-1">
-            <div class="animate-pulse flex space-x-4"><div class="flex-1 space-y-4 py-1"><div class="h-4 bg-gray-100 rounded w-3/4"></div><div class="h-4 bg-gray-100 rounded w-1/2"></div></div></div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-gray-800 font-semibold text-base flex items-center gap-2">
-                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                Overdue Alerts
-            </h3>
-            <button class="text-xs text-blue-600 hover:text-blue-800 font-medium">View All</button>
-        </div>
-        <div id="overdue-container" class="flex-1">
-             <div class="animate-pulse flex space-x-4"><div class="flex-1 space-y-4 py-1"><div class="h-4 bg-gray-100 rounded w-full"></div><div class="h-4 bg-gray-100 rounded w-5/6"></div></div></div>
-        </div>
-    </div>
-</div>
-
-        <div class="p-6 border-b border-slate-100 flex flex-col xl:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4 w-full xl:w-auto">
-                    <h3 class="font-bold text-lg whitespace-nowrap">Recent Activity</h3>
-                    <button onclick="exportToCSV()" class="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition font-medium">
-                        <i class="ph ph-download-simple"></i> Export CSV
+                    <button
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition"
+                        onclick="toggleModal('checkInModal')">
+                        + Quick Check-In
                     </button>
-                    <button onclick="handleCheckOutAll()" class="flex items-center gap-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition font-medium border border-red-200">
-                        <i class="ph ph-sign-out"></i> Close For Day
-                    </button>
-                </div>
-                
-                <div class="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-                    <input type="date" id="dateFilter" onchange="applyFilters()" 
-                        class="px-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 text-slate-600">
+                </header>
 
-                    <select id="statusFilter" onchange="applyFilters()" 
-                        class="px-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-600">
-                        <option value="all">All Status</option>
-                        <option value="active">Active Only</option>
-                        <option value="completed">Completed</option>
-                    </select>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-                    <div class="relative w-full md:w-64">
-                        <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search visitor..." 
-                            class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-lg"></i>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-slate-400 text-sm font-medium mb-1">Active Visitors</p>
+                                <h3 class="text-3xl font-bold text-slate-800" id="activeCount">0</h3>
+                            </div>
+                            <div class="p-2 bg-green-100 text-green-600 rounded-lg">
+                                <i class="ph ph-user-focus text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Space Utilization</span>
+                                <span id="capacityText">0/50 Seats</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div id="capacityBar" class="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                    style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-slate-400 text-sm font-medium mb-1">Total Today</p>
+                                <h3 class="text-3xl font-bold text-slate-800" id="totalTodayCount">0</h3>
+                                <p class="text-xs text-slate-400 mt-1">Check-ins since opening</p>
+                            </div>
+                            <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                <i class="ph ph-users-three text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-slate-400 text-sm font-medium mb-1">Busiest Hour</p>
+                                <h3 class="text-3xl font-bold text-slate-800" id="peakHourDisplay">-</h3>
+                                <p class="text-xs text-slate-400 mt-1">Based on today's traffic</p>
+                            </div>
+                            <div class="p-2 bg-orange-100 text-orange-600 rounded-lg">
+                                <i class="ph ph-trend-up text-xl"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                    <tr>
-                        <th class="p-4">Visitor Name</th>
-                        <th class="p-4">Purpose</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Check-In Time</th>
-                        <th class="p-4">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
-                    </tbody>
-            </table>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-2">
 
-            <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-slate-50">
-                <span class="text-xs text-slate-500">Showing <span id="pageInfo">0-0 of 0</span> entries</span>
-                <div class="flex gap-2">
-                    <button onclick="changePage(-1)" id="prevBtn" disabled 
-                        class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 text-sm">
-                        Previous
-                    </button>
-                    <button onclick="changePage(1)" id="nextBtn" disabled 
-                        class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 text-sm">
-                        Next
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    <div id="usersSection" class="hidden">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold">User Management</h2>
-                <p class="text-slate-500">Register new visitors or residents.</p>
-            </div>
-            <button onclick="toggleModal('addUserModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition">
-                + Register New User
-            </button>
-        </header>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-bold text-lg">Registered Users</h3>
-                <div class="relative">
-                    <input type="text" id="userSearch" placeholder="Search name..." onkeyup="loadUsers(this.value)" class="pl-8 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500">
-                    <i class="ph ph-magnifying-glass absolute left-2.5 top-2.5 text-slate-400"></i>
-                </div>
-            </div>
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                    <tr>
-                        <th class="p-4">ID</th>
-                        <th class="p-4">Full Name</th>
-                        <th class="p-4">Type</th>
-                        <th class="p-4">Contact</th>
-                        <!--<th class=-"p-4">Address</th>-->
-                        <!---<th class=-"p-4">Age</th>-->
-                        <th class="p-4">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody" class="divide-y divide-slate-100 text-sm">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="circulationSection" class="hidden">
-        <header class="mb-8">
-            <h2 class="text-2xl font-bold">Circulation Desk</h2>
-            <p class="text-slate-500">Issue books to students or process returns.</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
-                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                    <i class="ph ph-hand-giving text-blue-600"></i> Issue Book
-                </h3>
-                <form onsubmit="handleIssueBook(event)"> 
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">User ID</label>
-                        <input type="text" id="issueUserId" required placeholder="Enter User ID (e.g. 2025-1234)" 
-                            class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-gray-800 font-semibold text-base flex items-center gap-2">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path>
+                                </svg>
+                                Trending Titles
+                            </h3>
+                            <span class="text-xs text-gray-400 font-medium">This Month</span>
+                        </div>
+                        <div id="trending-container" class="flex-1">
+                            <div class="animate-pulse flex space-x-4">
+                                <div class="flex-1 space-y-4 py-1">
+                                    <div class="h-4 bg-gray-100 rounded w-3/4"></div>
+                                    <div class="h-4 bg-gray-100 rounded w-1/2"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Book ISBN</label>
-                        <input type="text" id="issueIsbn" required placeholder="Scan Barcode / Enter ISBN" class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">
-                        Confirm Issue
-                    </button>
-                </form>
-            </div>
 
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-lg text-orange-600">Active Loans</h3>
-                    <button onclick="loadLoans()" class="text-sm text-blue-600 hover:underline">Refresh</button>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-gray-800 font-semibold text-base flex items-center gap-2">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                    </path>
+                                </svg>
+                                Overdue Alerts
+                            </h3>
+                            <button class="text-xs text-blue-600 hover:text-blue-800 font-medium">View All</button>
+                        </div>
+                        <div id="overdue-container" class="flex-1">
+                            <div class="animate-pulse flex space-x-4">
+                                <div class="flex-1 space-y-4 py-1">
+                                    <div class="h-4 bg-gray-100 rounded w-full"></div>
+                                    <div class="h-4 bg-gray-100 rounded w-5/6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+
+                <div class="p-6 border-b border-slate-100 flex flex-col xl:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-4 w-full xl:w-auto">
+                        <h3 class="font-bold text-lg whitespace-nowrap">Recent Activity</h3>
+                        <button onclick="exportToCSV()"
+                            class="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition font-medium">
+                            <i class="ph ph-download-simple"></i> Export CSV
+                        </button>
+                        <button onclick="handleCheckOutAll()"
+                            class="flex items-center gap-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition font-medium border border-red-200">
+                            <i class="ph ph-sign-out"></i> Close For Day
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                        <input type="date" id="dateFilter" onchange="applyFilters()"
+                            class="px-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 text-slate-600">
+
+                        <select id="statusFilter" onchange="applyFilters()"
+                            class="px-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-600">
+                            <option value="all">All Status</option>
+                            <option value="active">Active Only</option>
+                            <option value="completed">Completed</option>
+                        </select>
+
+                        <div class="relative w-full md:w-64">
+                            <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search visitor..."
+                                class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
                         <tr>
-                            <th class="p-4">Borrower</th>
-                            <th class="p-4">Book Title</th>
-                            <th class="p-4">Due Date</th>
+                            <th class="p-4">Visitor Name</th>
+                            <th class="p-4">Purpose</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Check-In Time</th>
                             <th class="p-4">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="loansTableBody" class="divide-y divide-slate-100 text-sm">
-                        </tbody>
+                    <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+                    </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
 
-    <div id="booksSection" class="hidden">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold">Book Inventory</h2>
-                <p class="text-slate-500">Manage library collection and status.</p>
-            </div>
-            <button onclick="toggleModal('addBookModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition">
-                + Add New Book
-            </button>
-        </header>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-bold text-lg">Library Catalog</h3>
-                <div class="relative">
-                    <input type="text" placeholder="Search title, author, ISBN..." onkeyup="filterBooks(this.value)" class="pl-8 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500 w-64">
-                    <i class="ph ph-magnifying-glass absolute left-2.5 top-2.5 text-slate-400"></i>
+                <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-slate-50">
+                    <span class="text-xs text-slate-500">Showing <span id="pageInfo">0-0 of 0</span> entries</span>
+                    <div class="flex gap-2">
+                        <button onclick="changePage(-1)" id="prevBtn" disabled
+                            class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 text-sm">
+                            Previous
+                        </button>
+                        <button onclick="changePage(1)" id="nextBtn" disabled
+                            class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 text-sm">
+                            Next
+                        </button>
+                    </div>
                 </div>
             </div>
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                    <tr>
-                        <th class="p-4">ISBN</th>
-                        <th class="p-4">Title</th>
-                        <th class="p-4">Author</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="booksTableBody" class="divide-y divide-slate-100 text-sm">
-                    </tbody>
-            </table>
-        </div>
-    </div>
 
-    <div id="addBookModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4">Add New Book</h3>
-        <form onsubmit="handleAddBook(event)">
-            
-            <div class="mb-3">
-                <input type="text" id="newBookTitle" placeholder="Book Title" required 
-                    class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="usersSection" class="hidden">
+                <header class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold">User Management</h2>
+                        <p class="text-slate-500">Register new visitors or residents.</p>
+                    </div>
+                    <button onclick="toggleModal('addUserModal')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition">
+                        + Register New User
+                    </button>
+                </header>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold text-lg">Registered Users</h3>
+                        <div class="relative">
+                            <input type="text" id="userSearch" placeholder="Search name..."
+                                onkeyup="loadUsers(this.value)"
+                                class="pl-8 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500">
+                            <i class="ph ph-magnifying-glass absolute left-2.5 top-2.5 text-slate-400"></i>
+                        </div>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Full Name</th>
+                                <th class="p-4">Type</th>
+                                <th class="p-4">Contact</th>
+                                <!--<th class=-"p-4">Address</th>-->
+                                <!---<th class=-"p-4">Age</th>-->
+                                <th class="p-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="divide-y divide-slate-100 text-sm">
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <input type="text" id="newBookAuthor" placeholder="Author" required 
-                    class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="circulationSection" class="hidden">
+                <header class="mb-8">
+                    <h2 class="text-2xl font-bold">Circulation Desk</h2>
+                    <p class="text-slate-500">Issue books to students or process returns.</p>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                            <i class="ph ph-hand-giving text-blue-600"></i> Issue Book
+                        </h3>
+                        <form onsubmit="handleIssueBook(event)">
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">User ID</label>
+                                <input type="text" id="issueUserId" required
+                                    placeholder="Enter User ID (e.g. 2025-1234)"
+                                    class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Book ISBN</label>
+                                <input type="text" id="issueIsbn" required placeholder="Scan Barcode / Enter ISBN"
+                                    class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit"
+                                class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">
+                                Confirm Issue
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-orange-600">Active Loans</h3>
+                            <button onclick="loadLoans()" class="text-sm text-blue-600 hover:underline">Refresh</button>
+                        </div>
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                <tr>
+                                    <th class="p-4">Borrower</th>
+                                    <th class="p-4">Book Title</th>
+                                    <th class="p-4">Due Date</th>
+                                    <th class="p-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loansTableBody" class="divide-y divide-slate-100 text-sm">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <input type="text" id="newBookIsbn" placeholder="ISBN / Barcode" required 
-                    class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="booksSection" class="hidden">
+                <header class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold">Book Inventory</h2>
+                        <p class="text-slate-500">Manage library collection and status.</p>
+                    </div>
+                    <button onclick="toggleModal('addBookModal')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition">
+                        + Add New Book
+                    </button>
+                </header>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold text-lg">Library Catalog</h3>
+                        <div class="relative">
+                            <input type="text" placeholder="Search title, author, ISBN..."
+                                onkeyup="filterBooks(this.value)"
+                                class="pl-8 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500 w-64">
+                            <i class="ph ph-magnifying-glass absolute left-2.5 top-2.5 text-slate-400"></i>
+                        </div>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4">ISBN</th>
+                                <th class="p-4">Title</th>
+                                <th class="p-4">Author</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody" class="divide-y divide-slate-100 text-sm">
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="mb-6">
-                <select id="newBookCategory" class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                    <option value="Fiction">Fiction</option>
-                    <option value="Non-Fiction">Non-Fiction</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Science">Science</option>
-                    <option value="History">History</option>
-                    <option value="General">General</option>
-                </select>
+            <div id="addBookModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+                <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                    <h3 class="text-xl font-bold mb-4">Add New Book</h3>
+                    <form onsubmit="handleAddBook(event)">
+
+                        <div class="mb-3">
+                            <input type="text" id="newBookTitle" placeholder="Book Title" required
+                                class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" id="newBookAuthor" placeholder="Author" required
+                                class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" id="newBookIsbn" placeholder="ISBN / Barcode" required
+                                class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="mb-6">
+                            <select id="newBookCategory"
+                                class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                <option value="Fiction">Fiction</option>
+                                <option value="Non-Fiction">Non-Fiction</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Science">Science</option>
+                                <option value="History">History</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-3 justify-end">
+                            <button type="button" onclick="toggleModal('addBookModal')"
+                                class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Add
+                                Book</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            
-            <div class="flex gap-3 justify-end">
-                <button type="button" onclick="toggleModal('addBookModal')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Add Book</button>
+
+            <div id="successModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60]">
+                <div
+                    class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
+                    <div
+                        class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                        <i class="ph ph-check-circle text-4xl text-green-600"></i>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Success!</h3>
+                    <p class="text-slate-500 mb-6" id="successMessageText">Operation completed successfully.</p>
+
+                    <button onclick="toggleModal('successModal')"
+                        class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-200">
+                        Continue
+                    </button>
+                </div>
             </div>
-        </form>
-    </div>
-</div>
 
-<div id="successModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60]">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-            <i class="ph ph-check-circle text-4xl text-green-600"></i>
-        </div>
-        
-        <h3 class="text-xl font-bold text-slate-800 mb-2">Success!</h3>
-        <p class="text-slate-500 mb-6" id="successMessageText">Operation completed successfully.</p>
-        
-        <button onclick="toggleModal('successModal')" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-200">
-            Continue
-        </button>
-    </div>
-</div>
+            <div id="confirmModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[70]">
+                <div
+                    class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ph ph-question text-4xl text-orange-600"></i>
+                    </div>
 
-<div id="confirmModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[70]">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
-        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ph ph-question text-4xl text-orange-600"></i>
-        </div>
-        
-        <h3 class="text-xl font-bold text-slate-800 mb-2">Are you sure?</h3>
-        <p class="text-slate-500 mb-6" id="confirmMessageText">Do you want to proceed?</p>
-        
-        <div class="flex gap-3">
-            <button onclick="closeConfirm()" class="flex-1 py-3 text-slate-500 hover:bg-slate-50 rounded-xl font-bold transition border border-slate-200">
-                Cancel
-            </button>
-            <button id="confirmYesBtn" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-200">
-                Yes, Confirm
-            </button>
-        </div>
-    </div>
-</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Are you sure?</h3>
+                    <p class="text-slate-500 mb-6" id="confirmMessageText">Do you want to proceed?</p>
 
-<div id="walkinSection" class="hidden">
-    <header class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-2xl font-bold">Walk-in Visitors</h2>
-            <p class="text-slate-500">Manage temporary daily visitors (Non-Members).</p>
-        </div>
-        <div class="relative">
-            <input type="text" placeholder="Search walk-ins..." onkeyup="filterWalkIns(this.value)" 
-                class="pl-9 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500 w-64">
-            <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-        </div>
-    </header>
+                    <div class="flex gap-3">
+                        <button onclick="closeConfirm()"
+                            class="flex-1 py-3 text-slate-500 hover:bg-slate-50 rounded-xl font-bold transition border border-slate-200">
+                            Cancel
+                        </button>
+                        <button id="confirmYesBtn"
+                            class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-200">
+                            Yes, Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                <tr>
-                    <th class="p-4">Temp ID</th>
-                    <th class="p-4">Visitor Name</th>
-                    <th class="p-4">Purpose</th>
-                    <th class="p-4">Contact / Address</th>
-                    <th class="p-4">Time In</th>
-                    <th class="p-4">Status</th>
-                    <th class="p-4">Action</th>
-                </tr>
-            </thead>
-            <tbody id="walkinTableBody" class="divide-y divide-slate-100 text-sm">
-                </tbody>
-        </table>
-    </div>
-</div>
+            <div id="walkinSection" class="hidden">
+                <header class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold">Walk-in Visitors</h2>
+                        <p class="text-slate-500">Manage temporary daily visitors (Non-Members).</p>
+                    </div>
+                    <div class="relative">
+                        <input type="text" placeholder="Search walk-ins..." onkeyup="filterWalkIns(this.value)"
+                            class="pl-9 pr-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-blue-500 w-64">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                    </div>
+                </header>
 
-</main>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4">Temp ID</th>
+                                <th class="p-4">Visitor Name</th>
+                                <th class="p-4">Purpose</th>
+                                <th class="p-4">Contact / Address</th>
+                                <th class="p-4">Time In</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="walkinTableBody" class="divide-y divide-slate-100 text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
 
     </div>
 
     <div id="checkInModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">Check In Visitor</h3>
-            <input type="number" id="userIdInput" placeholder="Enter User ID" class="w-full p-3 border border-slate-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="number" id="userIdInput" placeholder="Enter User ID"
+                class="w-full p-3 border border-slate-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
             <div class="flex gap-3 justify-end">
-                <button onclick="toggleModal('checkInModal')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button onclick="handleCheckIn()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Confirm Check-In</button>
+                <button onclick="toggleModal('checkInModal')"
+                    class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button onclick="handleCheckIn()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Confirm Check-In</button>
             </div>
         </div>
     </div>
 
-<div id="addUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4">Register User</h3>
-        <form id="newUserForm">
-            <input type="text" id="newUserName" placeholder="Full Name" required 
-                class="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 outline-none">
-        
-            <select id="newUserType" class="w-full p-3 border border-slate-200 rounded-lg mb-3 outline-none">
-                <option value="Visitor">Visitor</option>
-                <option value="Student">Student</option>
-                <option value="Resident">Resident</option>
-            </select>
-        
-            <input type="text" id="newUserContact" placeholder="Contact Number" 
-                class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none">
+    <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Register User</h3>
+            <form id="newUserForm">
+                <input type="text" id="newUserName" placeholder="Full Name" required
+                    class="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 outline-none">
+
+                <select id="newUserType" class="w-full p-3 border border-slate-200 rounded-lg mb-3 outline-none">
+                    <option value="Visitor">Visitor</option>
+                    <option value="Student">Student</option>
+                    <option value="Resident">Resident</option>
+                </select>
+
+                <input type="text" id="newUserContact" placeholder="Contact Number"
+                    class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none">
 
                 <!-- Address Field -->
                 <!--<textarea id="newUserAddress" placeholder="Home Address" rows="2"
                 class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
-            
+
                 <!-- Age Field -->
                 <!--<textarea id="newUserAge" placeholder="Age" rows="2"
                 class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
-        
-            <div class="mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">ID Card Format</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="idType" value="photo" checked onclick="togglePhotoField(true)" class="text-blue-600 focus:ring-blue-500">
-                        <span class="ml-2 text-sm text-slate-700 font-medium">With Photo</span>
-                    </label>
-                    <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="idType" value="basic" onclick="togglePhotoField(false)" class="text-blue-600 focus:ring-blue-500">
-                        <span class="ml-2 text-sm text-slate-700 font-medium">Text Only</span>
-                    </label>
+
+                <div class="mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">ID Card Format</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="idType" value="photo" checked onclick="togglePhotoField(true)"
+                                class="text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-slate-700 font-medium">With Photo</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="idType" value="basic" onclick="togglePhotoField(false)"
+                                class="text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-slate-700 font-medium">Text Only</span>
+                        </label>
+                    </div>
                 </div>
-            </div>
-        
-            <div id="photoUploadField" class="mb-6">
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Photo</label>
-                <input type="file" id="newUserPhoto" accept="image/*"
-                    class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-            </div>
-            
-            <div class="flex gap-3 justify-end">
-                <button type="button" onclick="toggleModal('addUserModal')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">Register</button>
-            </div>
-        </form> 
-    </div>
-</div>
 
-<div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4">Edit Visit Details</h3>
-        <input type="hidden" id="editLogId">
-        
-        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Update Purpose</label>
-        <select id="editPurposeInput" class="w-full p-3 border border-slate-200 rounded-lg mb-6 outline-none bg-white">
-            <option value="Study">Study</option>
-            <option value="Research">Research</option>
-            <option value="Borrowing">Borrowing</option>
-            <option value="Internet Use">Internet Use</option>
-            <option value="General">General</option>
-        </select>
+                <div id="photoUploadField" class="mb-6">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Photo</label>
+                    <input type="file" id="newUserPhoto" accept="image/*"
+                        class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                </div>
 
-        <div class="flex gap-3 justify-end">
-            <button onclick="document.getElementById('editModal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button onclick="saveEdit()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Changes</button>
+                <div class="flex gap-3 justify-end">
+                    <button type="button" onclick="toggleModal('addUserModal')"
+                        class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">Register</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+
+    <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Edit Visit Details</h3>
+            <input type="hidden" id="editLogId">
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Update Purpose</label>
+            <select id="editPurposeInput"
+                class="w-full p-3 border border-slate-200 rounded-lg mb-6 outline-none bg-white">
+                <option value="Study">Study</option>
+                <option value="Research">Research</option>
+                <option value="Borrowing">Borrowing</option>
+                <option value="Internet Use">Internet Use</option>
+                <option value="General">General</option>
+            </select>
+
+            <div class="flex gap-3 justify-end">
+                <button onclick="document.getElementById('editModal').classList.add('hidden')"
+                    class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button onclick="saveEdit()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/script.js"></script>
 </body>
+
 </html>
