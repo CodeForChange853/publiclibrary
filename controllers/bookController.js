@@ -11,9 +11,28 @@ exports.getAllBooks = async (req, res) => {
     }
 };
 
+exports.updateBook = async (req, res) => {
+    // These match the keys we sent in the JSON.stringify() body in script.js
+    const { original_isbn, isbn, title, author } = req.body;
+
+    try {
+        await Book.updateBook(original_isbn, isbn, title, author);
+        res.status(200).json({
+            success: true,
+            message: 'Book updated successfully'
+        });
+    } catch (error) {
+        console.error('Update book error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Database error while updating the book.'
+        });
+    }
+};
+
 exports.addBook = async (req, res) => {
     const { isbn, title, author, category } = req.body;
-    
+
     // Basic Validation
     if (!isbn || !title || !author) {
         return res.status(400).json({ message: 'Please provide ISBN, Title, and Author' });

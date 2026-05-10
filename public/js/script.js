@@ -147,47 +147,19 @@ function updateDashboardMetrics(data) {
     }
 }
 
-
 async function loadHotLists() {
-    // 1. Define realistic mock data for Trending Books
-    const mockTrending = [
-        { title: "The Midnight Library", author: "Matt Haig", borrow_count: 42 },
-        { title: "Atomic Habits", author: "James Clear", borrow_count: 38 },
-        { title: "Project Hail Mary", author: "Andy Weir", borrow_count: 25 },
-        { title: "Sapiens: A Brief History", author: "Yuval Noah Harari", borrow_count: 19 },
-        { title: "Dune", author: "Frank Herbert", borrow_count: 15 }
-    ];
-
-    // 2. Calculate dynamic past dates so the "days late" math always works correctly
-    const today = new Date();
-    const calculatePastDate = (daysAgo) => {
-        const date = new Date(today);
-        date.setDate(date.getDate() - daysAgo);
-        return date.toISOString();
-    };
-
-    // 3. Define realistic mock data for Overdue Alerts
-    const mockOverdue = [
-        { full_name: "Nicole Casaljay", title: "1984 by George Orwell", due_date: calculatePastDate(5) },
-        { full_name: "Isabella Rosales", title: "To Kill a Mockingbird", due_date: calculatePastDate(2) },
-        { full_name: "Ramela Lozano", title: "The Hobbit", due_date: calculatePastDate(12) }
-    ];
-
-    // 4. Simulate a slight network delay so you can see the skeleton loaders vanish
-    setTimeout(() => {
-        renderTrending(mockTrending);
-        renderOverdue(mockOverdue);
-    }, 800);
-
-    /* === REAL API FETCH (COMMENTED OUT FOR NOW) === 
     try {
+        // Fetch real data from your backend
         const response = await authenticatedFetch(`${API_URL}/circulation/dashboard-stats`);
+
         if (!response || !response.ok) {
-             console.error("Failed to load hot lists.");
-             return;
+            console.error("Failed to load hot lists.");
+            return;
         }
+
         const result = await response.json();
 
+        // If successful, pass the database results to your render functions
         if (result.success) {
             renderTrending(result.data.trending);
             renderOverdue(result.data.overdue);
@@ -195,7 +167,6 @@ async function loadHotLists() {
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
     }
-    ================================================= */
 }
 
 function renderTrending(books) {
@@ -264,8 +235,8 @@ function applyFilters() {
     const searchQuery = document.getElementById('searchInput').value.toLowerCase();
     const statusFilter = document.getElementById('statusFilter').value;
     const dateFilter = document.getElementById('dateFilter').value;
-    const address = document.getElementById('newUserAddress').value;
-
+    const addressEl = document.getElementById('newUserAddress');
+    const address = addressEl ? addressEl.value : '';
     filteredData = allAttendanceData.filter(log => {
         const matchesName = log.full_name.toLowerCase().includes(searchQuery);
 
@@ -412,11 +383,11 @@ async function handleCheckOut(id, type) {
             loadHistory();
         } else {
             const data = response ? await response.json() : {};
-            alert(data.message || "Check-out failed.");
+            showError(data.message || "Check-out failed.");
         }
     } catch (error) {
         console.error("Check-out error:", error);
-        alert("Server error during check-out.");
+        showError("Server error during check-out.");
     }
 }
 
@@ -573,11 +544,11 @@ async function handleAddUser(event) {
             loadUsers(); // Refresh the table
         } else {
             const data = await response.json();
-            alert(data.message || 'Error registering user');
+            showError(data.message || 'Error registering user');
         }
     } catch (error) {
         console.error('Registration failed:', error);
-        alert("Server error. Check your connection.");
+        showError("Server error. Check your connection.");
     }
 }
 // Helper: Convert File to Base64 (NO CHANGE)
@@ -603,9 +574,10 @@ async function deleteUser(id) {
         if (!response) return;
 
         if (response.ok) loadUsers();
-        else alert('Could not delete user');
+        else showError('Could not delete user');
     } catch (error) {
         console.error('Delete error:', error);
+        showError('Server error. Could not delete user.');
     }
 }
 
@@ -618,7 +590,7 @@ function toggleModal(modalId) {
 // 11. Export to CSV Function (NO CHANGE - Does not hit API)
 function exportToCSV() {
     if (filteredData.length === 0) {
-        alert("No data to export");
+        showError("No data to export");
         return;
     }
 
@@ -653,29 +625,28 @@ async function handleCheckOutAll() {
     const activeUsers = allAttendanceData.filter(log => log.status === 'Checked In');
 
     if (activeUsers.length === 0) {
-        alert("No active visitors to check out.");
+        showError("No active visitors to check out."); // <-- Updated
         return;
     }
 
-    if (!confirm(`Are you sure you want to force check-out ${activeUsers.length} visitors?`)) return;
+    showConfirm(`Are you sure you want to force check-out ${activeUsers.length} visitors?`, async () => {
+        let successCount = 0;
 
-    let successCount = 0;
-
-    for (const user of activeUsers) {
-        try {
-            // Change: Use authenticatedFetch
-            await authenticatedFetch(`${API_URL}/attendance/checkout`, {
-                method: 'POST',
-                body: JSON.stringify({ user_id: user.user_id })
-            });
-            successCount++;
-        } catch (err) {
-            console.error(err);
+        for (const user of activeUsers) {
+            try {
+                await authenticatedFetch(`${API_URL}/attendance/checkout`, {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: user.user_id })
+                });
+                successCount++;
+            } catch (err) {
+                console.error(err);
+            }
         }
-    }
 
-    alert(`Successfully checked out ${successCount} visitors.`);
-    loadHistory();
+        showSuccess(`Successfully checked out ${successCount} visitors.`); // <-- Updated
+        loadHistory();
+    });
 }
 
 // 13. Edit Visit Details (NO CHANGE - Assumes backend is secured)
@@ -703,10 +674,11 @@ async function saveEdit() {
             document.getElementById('editModal').classList.add('hidden');
             loadHistory();
         } else {
-            alert('Failed to update purpose');
+            showError('Failed to update purpose');
         }
     } catch (error) {
         console.error('Update error:', error);
+        showError('Server error updating purpose.');
     }
 }
 
@@ -753,7 +725,7 @@ function renderBookTable(books) {
             <td class="p-4 text-slate-600">${book.author}</td>
             <td class="p-4">${statusBadge}</td>
             <td class="p-4">
-                <button class="text-blue-500 hover:text-blue-700">
+                <button onclick="openEditBookModal('${book.isbn}')" class="text-blue-500 hover:text-blue-700 transition">
                     <i class="ph ph-pencil-simple text-lg"></i>
                 </button>
             </td>
@@ -803,10 +775,65 @@ async function handleAddBook(event) {
             loadBooks();
         } else {
             const data = await response.json();
-            alert(data.message || 'Error adding book');
+            showError(data.message || 'Error adding book');
         }
     } catch (error) {
-        console.error('Error:', error);
+        showError('Server error while adding book.');
+    }
+}
+
+// --- EDIT BOOK LOGIC ---
+
+// 1. Open the modal and populate it with existing data
+function openEditBookModal(isbn) {
+    // Find the book from our globally stored array
+    const book = allBooksData.find(b => b.isbn === isbn);
+    if (!book) return;
+
+    // Populate the form fields
+    document.getElementById('editBookOriginalIsbn').value = book.isbn; // Keep track of the original
+    document.getElementById('editBookIsbn').value = book.isbn;
+    document.getElementById('editBookTitle').value = book.title;
+    document.getElementById('editBookAuthor').value = book.author;
+
+    // Show the modal
+    toggleModal('editBookModal');
+}
+
+// 2. Handle the form submission to save changes
+async function handleUpdateBook(event) {
+    event.preventDefault();
+
+    const originalIsbn = document.getElementById('editBookOriginalIsbn').value;
+    const newIsbn = document.getElementById('editBookIsbn').value;
+    const title = document.getElementById('editBookTitle').value;
+    const author = document.getElementById('editBookAuthor').value;
+
+    try {
+        // We use PUT for updates. Ensure your backend route matches this.
+        const response = await authenticatedFetch(`${API_URL}/books/update`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                original_isbn: originalIsbn,
+                isbn: newIsbn,
+                title: title,
+                author: author
+            })
+        });
+
+        if (!response) return;
+
+        if (response.ok) {
+            toggleModal('editBookModal');
+            showSuccess('Book Updated Successfully!');
+            loadBooks(); // Refresh the table to show the new data
+        } else {
+            const data = await response.json();
+            showError(data.message || 'Error updating book');
+        }
+    } catch (error) {
+        console.error('Error updating book:', error);
+        showError('Server error while updating book.');
     }
 }
 
@@ -884,7 +911,7 @@ async function handleIssueBook(event) {
             document.getElementById('issueIsbn').value = '';
             loadLoans();
         } else {
-            alert(result.message || 'Error issuing book');
+            showError(result.message || 'Error issuing book');
         }
     } catch (error) {
         console.error('Issue error:', error);
@@ -907,10 +934,11 @@ function handleReturnBook(loanId) {
                 showSuccess('Book Returned Successfully');
                 loadLoans();
             } else {
-                alert('Error returning book');
+                showError('Error returning book');
             }
         } catch (error) {
             console.error('Return error:', error);
+            showError('Server error processing return.');
         }
     });
 }
@@ -921,6 +949,15 @@ function handleReturnBook(loanId) {
 function showSuccess(message) {
     const modal = document.getElementById('successModal');
     const msg = document.getElementById('successMessageText');
+    if (modal && msg) {
+        msg.innerText = message;
+        modal.classList.remove('hidden');
+    }
+}
+
+function showError(message) {
+    const modal = document.getElementById('errorModal');
+    const msg = document.getElementById('errorMessageText');
     if (modal && msg) {
         msg.innerText = message;
         modal.classList.remove('hidden');
@@ -1202,24 +1239,28 @@ function renderWalkinTable(data) {
 
 // 4. NEW FUNCTION: Handle Admin Manual Check-out for Walk-ins
 async function handleWalkinCheckOut(id) {
-    if (!confirm("Check out this visitor?")) return;
+    // <-- Updated to use your custom confirm modal
+    showConfirm("Check out this visitor?", async () => {
+        try {
+            const response = await authenticatedFetch(`${API_URL}/attendance/checkout`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'walk-in',
+                    id: id
+                })
+            });
 
-    try {
-        const response = await authenticatedFetch(`${API_URL}/attendance/checkout`, {
-            method: 'POST',
-            body: JSON.stringify({
-                type: 'walk-in', // Flag to tell backend this is a walk-in ID
-                id: id
-            })
-        });
-
-        if (response.ok) {
-            loadWalkIns(); // Refresh table
-            showSuccess("Visitor Checked Out");
+            if (response.ok) {
+                loadWalkIns();
+                showSuccess("Visitor Checked Out");
+            } else {
+                showError("Failed to check out walk-in visitor.");
+            }
+        } catch (error) {
+            console.error(error);
+            showError("Server error during check out.");
         }
-    } catch (error) {
-        console.error(error);
-    }
+    });
 }
 
 // 5. NEW FUNCTION: Search Filter for Walk-ins

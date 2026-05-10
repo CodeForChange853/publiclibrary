@@ -24,6 +24,11 @@ class Book {
     static async updateStatus(id, status) {
         return db.execute('UPDATE books SET status = ? WHERE id = ?', [status, id]);
     }
+
+    static async updateBook(originalIsbn, newIsbn, title, author) {
+        const sql = 'UPDATE books SET isbn = ?, title = ?, author = ? WHERE isbn = ?';
+        return db.execute(sql, [newIsbn, title, author, originalIsbn]);
+    }
 }
 
 module.exports = Book;

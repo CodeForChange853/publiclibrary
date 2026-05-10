@@ -11,6 +11,7 @@
     <script>
         // Check for token on page load
         if (!localStorage.getItem('authToken')) {
+            // If no token exists, redirect to login page immediately
             window.location.href = 'login.html';
         }
     </script>
@@ -78,11 +79,7 @@
                         <h2 class="text-2xl font-bold">Overview</h2>
                         <p class="text-slate-500">Welcome back, here's what's happening today.</p>
                     </div>
-                    <button
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-200 transition"
-                        onclick="toggleModal('checkInModal')">
-                        + Quick Check-In
-                    </button>
+
                 </header>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -494,103 +491,141 @@
 
         </main>
 
-    </div>
+        <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                <h3 class="text-xl font-bold mb-4">Register User</h3>
+                <form id="newUserForm">
+                    <input type="text" id="newUserName" placeholder="Full Name" required
+                        class="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 outline-none">
 
-    <div id="checkInModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4">Check In Visitor</h3>
-            <input type="number" id="userIdInput" placeholder="Enter User ID"
-                class="w-full p-3 border border-slate-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-            <div class="flex gap-3 justify-end">
-                <button onclick="toggleModal('checkInModal')"
-                    class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button onclick="handleCheckIn()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Confirm Check-In</button>
+                    <select id="newUserType" class="w-full p-3 border border-slate-200 rounded-lg mb-3 outline-none">
+                        <option value="Visitor">Visitor</option>
+                        <option value="Student">Student</option>
+                        <option value="Resident">Resident</option>
+                    </select>
+
+                    <input type="text" id="newUserContact" placeholder="Contact Number"
+                        class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none">
+
+                    <!-- Address Field -->
+                    <!--<textarea id="newUserAddress" placeholder="Home Address" rows="2"
+                class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
+
+                    <!-- Age Field -->
+                    <!--<textarea id="newUserAge" placeholder="Age" rows="2"
+                class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
+
+                    <div class="mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">ID Card Format</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="idType" value="photo" checked onclick="togglePhotoField(true)"
+                                    class="text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-slate-700 font-medium">With Photo</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="idType" value="basic" onclick="togglePhotoField(false)"
+                                    class="text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-slate-700 font-medium">Text Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="photoUploadField" class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Photo</label>
+                        <input type="file" id="newUserPhoto" accept="image/*"
+                            class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                    </div>
+
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" onclick="toggleModal('addUserModal')"
+                            class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                        <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">Register</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4">Register User</h3>
-            <form id="newUserForm">
-                <input type="text" id="newUserName" placeholder="Full Name" required
-                    class="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 outline-none">
+        <div id="editBookModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                <h3 class="text-xl font-bold mb-4">Edit Book Details</h3>
+                <form onsubmit="handleUpdateBook(event)">
 
-                <select id="newUserType" class="w-full p-3 border border-slate-200 rounded-lg mb-3 outline-none">
-                    <option value="Visitor">Visitor</option>
-                    <option value="Student">Student</option>
-                    <option value="Resident">Resident</option>
+                    <input type="hidden" id="editBookOriginalIsbn">
+
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Book Title</label>
+                        <input type="text" id="editBookTitle" required
+                            class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Author</label>
+                        <input type="text" id="editBookAuthor" required
+                            class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">ISBN / Barcode</label>
+                        <input type="text" id="editBookIsbn" required
+                            class="w-full p-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                    </div>
+
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" onclick="toggleModal('editBookModal')"
+                            class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save
+                            Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                <h3 class="text-xl font-bold mb-4">Edit Visit Details</h3>
+                <input type="hidden" id="editLogId">
+
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Update Purpose</label>
+                <select id="editPurposeInput"
+                    class="w-full p-3 border border-slate-200 rounded-lg mb-6 outline-none bg-white">
+                    <option value="Study">Study</option>
+                    <option value="Research">Research</option>
+                    <option value="Borrowing">Borrowing</option>
+                    <option value="Internet Use">Internet Use</option>
+                    <option value="General">General</option>
                 </select>
 
-                <input type="text" id="newUserContact" placeholder="Contact Number"
-                    class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none">
-
-                <!-- Address Field -->
-                <!--<textarea id="newUserAddress" placeholder="Home Address" rows="2"
-                class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
-
-                <!-- Age Field -->
-                <!--<textarea id="newUserAge" placeholder="Age" rows="2"
-                class="w-full p-3 border border-slate-200 rounded-lg mb-4 outline-none resize-none"></textarea>-->
-
-                <div class="mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">ID Card Format</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="idType" value="photo" checked onclick="togglePhotoField(true)"
-                                class="text-blue-600 focus:ring-blue-500">
-                            <span class="ml-2 text-sm text-slate-700 font-medium">With Photo</span>
-                        </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="idType" value="basic" onclick="togglePhotoField(false)"
-                                class="text-blue-600 focus:ring-blue-500">
-                            <span class="ml-2 text-sm text-slate-700 font-medium">Text Only</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="photoUploadField" class="mb-6">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Photo</label>
-                    <input type="file" id="newUserPhoto" accept="image/*"
-                        class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                </div>
-
                 <div class="flex gap-3 justify-end">
-                    <button type="button" onclick="toggleModal('addUserModal')"
+                    <button onclick="document.getElementById('editModal').classList.add('hidden')"
                         class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="submit"
-                        class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">Register</button>
+                    <button onclick="saveEdit()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Changes</button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4">Edit Visit Details</h3>
-            <input type="hidden" id="editLogId">
-
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Update Purpose</label>
-            <select id="editPurposeInput"
-                class="w-full p-3 border border-slate-200 rounded-lg mb-6 outline-none bg-white">
-                <option value="Study">Study</option>
-                <option value="Research">Research</option>
-                <option value="Borrowing">Borrowing</option>
-                <option value="Internet Use">Internet Use</option>
-                <option value="General">General</option>
-            </select>
-
-            <div class="flex gap-3 justify-end">
-                <button onclick="document.getElementById('editModal').classList.add('hidden')"
-                    class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button onclick="saveEdit()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save
-                    Changes</button>
             </div>
         </div>
-    </div>
 
-    <script src="js/script.js"></script>
+        <div id="errorModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[60]">
+            <div
+                class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
+                <div
+                    class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                    <i class="ph ph-warning-circle text-4xl text-red-600"></i>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Notice</h3>
+                <p class="text-slate-500 mb-6" id="errorMessageText">Action could not be completed.</p>
+
+                <button onclick="toggleModal('errorModal')"
+                    class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition shadow-sm">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+
+        <script src="js/script.js"></script>
 </body>
 
 </html>
